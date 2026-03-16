@@ -1,0 +1,25 @@
+name: Bot Kaspa Automatico
+
+on:
+  schedule:
+    - cron: '*/80 * * * *'  # Roda a cada 80 minutos
+  workflow_dispatch:      # Permite que você clique num botão para postar agora
+
+jobs:
+  postar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Instalar Tweepy
+        run: pip install tweepy
+      - name: Executar o Bot
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+        run: python bot.py
