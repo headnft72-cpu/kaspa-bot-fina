@@ -1,4 +1,5 @@
 name: Bot Kaspa Automatico
+
 on:
   workflow_dispatch:
   schedule:
@@ -8,15 +9,18 @@ jobs:
   executar:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout do código
         uses: actions/checkout@v3
-      - name: Setup Python
+
+      - name: Configurar Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+
       - name: Instalar Tweepy
         run: pip install tweepy
-      - name: Rodar Bot
+
+      - name: Executar o Bot
         env:
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
