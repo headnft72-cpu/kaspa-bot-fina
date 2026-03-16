@@ -1,64 +1,29 @@
-import tweepy, os, random, time
+name: Bot Kaspa Automatico
 
-def postar():
-    try:
-        client = tweepy.Client(
-            consumer_key=os.getenv('X_API_KEY'),
-            consumer_secret=os.getenv('X_API_SECRET'),
-            access_token=os.getenv('X_ACCESS_TOKEN'),
-            access_token_secret=os.getenv('X_ACCESS_SECRET')
-        )
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/80 * * * *'
 
-        # 📝 POSTS CURTOS (Máximo 280 caracteres para contas grátis)
-        posts_normais = [
-            "Kaspa is the fastest open-source, decentralized Layer-1 PoW network. Its blockDAG tech allows 1 block per second. Speed without sacrificing security! 🚀\n\nLearn more: https://kaspa.org #KAS #Kaspa #BlockDAG",
-            
-            "The GHOSTDAG protocol allows parallel blocks to coexist. No energy wasted on orphans, making Kaspa an efficient PoW masterpiece. 🛠️\n\nWhitepaper: https://kaspa.org/resources/ #KAS #Crypto",
-            
-            "Scalability in Kaspa means processing multiple blocks simultaneously. High throughput for global demand while staying decentralized. 🌍\n\nDetails: https://kaspa.org #KAS #Tech",
-            
-            "Kaspa's sub-second block times change merchant adoption. Near-instant visual confirmation for retail. Digital cash as it should be! 💸\n\nWebsite: https://kaspa.org #Fintech #KAS",
-            
-            "A segurança da Kaspa vem do consenso Nakamoto, mas com a agilidade do BlockDAG. O equilíbrio perfeito entre ouro digital e rapidez! 🇧🇷\n\nSaiba mais: https://kaspa.org #Kaspa #KAS",
-            
-            "Fair launch, no pre-mine, no ICO. Kaspa mirrors the organic growth of early Bitcoin. A community-driven revolution! 💎\n\nJoin us: https://kaspa.org #Decentralization #KAS",
-            
-            "The move to Rust will make Kaspa the fastest PoW network on Earth. 10 to 100 blocks per second is the goal. Pure innovation! ⚡\n\nProgress: https://kaspa.org #KAS #Layer1",
-            
-            "Every second counts. Kaspa handles high block rates without losing decentralization. Built for the future of finance. 🏦\n\nDocs: https://wiki.kaspa.org #BlockDAG #KAS"
-        ]
+jobs:
+  executar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
 
-        # 🧵 THREADS CURTAS
-        threads = [
-            [
-                "1/6 Kaspa is the world's first blockDAG, enabling parallel blocks and instant confirmation. Built on PoW with 1-second intervals. ⚡\n\nhttps://kaspa.org",
-                "2/6 Traditional chains orphan parallel blocks. GHOSTDAG lets them coexist, solving the scalability-security tradeoff safely. 🔐",
-                "3/6 Efficiency: kHeavyHash algorithm ensures security while being more energy-efficient than older PoW generations. 🍃",
-                "4/6 Confirmation: While BTC takes minutes, Kaspa takes seconds. It's real peer-to-peer digital cash for daily use. ☕",
-                "5/6 The move to Rust and 10+ BPS will set a new global standard. Scalable and secure PoW infrastructure. #KAS",
-                "6/6 Join the BlockDAG evolution. Secure, fast, and community-driven. The future is here! 🚀\n\nCommunity: https://kaspa.org/community/"
-            ]
-        ]
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-        agora = time.gmtime()
-        if agora.tm_hour in [0, 8, 16] and agora.tm_min < 20:
-            print("🕒 Hora da Thread!")
-            fio = random.choice(threads)
-            ultimo_id = None
-            for parte in fio:
-                response = client.create_tweet(text=parte, in_reply_to_tweet_id=ultimo_id)
-                ultimo_id = response.data['id']
-                time.sleep(2)
-            print("✅ Thread enviada!")
-        else:
-            print("🕒 Hora do Post normal!")
-            post_escolhido = random.choice(posts_normais)
-            client.create_tweet(text=post_escolhido)
-            print("✅ Post enviado!")
+      - name: Instalar Tweepy
+        run: pip install tweepy
 
-    except Exception as e:
-        print(f"❌ Erro: {e}")
-        raise e # Isso faz o erro aparecer no log do GitHub
-
-if __name__ == "__main__":
-    postar()
+      - name: Executar o Bot
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+        run: python bot.py
